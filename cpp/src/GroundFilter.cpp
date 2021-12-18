@@ -75,6 +75,29 @@ void groundfilter_tin(const std::vector<Point>& pointcloud, const json& jparams)
 }
 
 
+// related functions of CSF algorithm
+namespace csf {
+    
+    /*
+    * @brief: compute the bounding box points("low left" corner and "up right" corner in 3D space)
+    * @param: pcloud: input point cloud (an N x 3 array)
+    *         bmin: "low-left" corner bmax: "up-right" corner
+    * @return: none
+    */
+    void bounding_box(const std::vector<Point>& pcloud, Point& bmin, Point& bmax) {
+
+        if (!pcloud.empty()) {
+            bmin = bmax = pcloud[0];
+
+            for (std::size_t i = 1; i < pcloud.size(); ++i) {
+                const Point& tmp = pcloud[i]; // reference point at the beginning
+                //if (pcloud[i].x() < bmin.x())bmin.x()=0;
+            }
+        }
+
+    }
+}
+
 
 void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams) {
   /*
@@ -105,11 +128,13 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
   // //-- https://doc.cgal.org/latest/Kernel_23/classCGAL_1_1Point__3.html
    int i = 0;
    for (auto p : pointcloud) {
-     std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z()  << ")" << std::endl;
-     i++;
-     if (i == 5) 
-       break;
+        //std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z()  << ")" << '\n';
+        std::cout << "(" << p.x << ", " << p.y << ", " << p.z << ")" << '\n';
+        ++i;
+        if (i == 5) 
+            break;
    }
+   std::cout << pointcloud.size() << '\n';
 
   //-- TIP
   //-- construct and query kd-tree:
@@ -127,8 +152,8 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
   //-- TIP
   //-- write the results to a new LAS file
-  // std::vector<int> class_labels;
-  // write_lasfile(jparams["output_las"], pointcloud, class_labels);
+  std::vector<int> class_labels(pointcloud.size()); // Initialized with 0
+  write_lasfile(jparams["output_las"], pointcloud, class_labels);
 }
 
 
@@ -157,7 +182,7 @@ std::vector<Point> read_lasfile(const json& jparams) {
   //-- https://doc.cgal.org/latest/Kernel_23/classCGAL_1_1Point__3.html
 	std::vector<Point> points;
 	while (lasreader->read_point()) {
-		points.push_back( 
+		points.emplace_back( 
 			Point(
 				lasreader->point.get_x(),
 				lasreader->point.get_y(),
@@ -214,16 +239,21 @@ void write_lasfile(const std::string filename, const std::vector<Point>& pointcl
 		const Point& p = pointcloud[i];
 		const int& label = class_labels[i];
 
-    laspoint.set_x(p[0]);
-    laspoint.set_y(p[1]);
-    laspoint.set_z(p[2]);
+        /*laspoint.set_x(p[0]);
+        laspoint.set_y(p[1]);
+        laspoint.set_z(p[2]);*/
+
+        laspoint.set_x(p.x);
+        laspoint.set_y(p.y);
+        laspoint.set_z(p.z);
+
 		laspoint.set_classification(label);
 
-    laswriter->write_point(&laspoint);
-    laswriter->update_inventory(&laspoint);    
+        laswriter->write_point(&laspoint);
+        laswriter->update_inventory(&laspoint);    
   } 
 
-  laswriter->update_header(&lasheader, TRUE);
-  laswriter->close();
-  delete laswriter;
+    laswriter->update_header(&lasheader, TRUE);
+    laswriter->close();
+    delete laswriter;
 }
