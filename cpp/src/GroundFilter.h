@@ -20,16 +20,16 @@
 using json = nlohmann::json;
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-//typedef Kernel::Point_3 Point;
+typedef Kernel::Point_3 Point;
 
 
-struct Point {
+struct MyPoint {
 	double x;
 	double y;
 	double z;
 
-	Point():x(0),y(0),z(0){}
-	Point(const double& p_x, const double& p_y, const double& p_z):
+	MyPoint():x(0),y(0),z(0){}
+	MyPoint(const double& p_x, const double& p_y, const double& p_z):
 		x(p_x),y(p_y),z(p_z){}
 
 };
