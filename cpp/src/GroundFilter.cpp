@@ -108,6 +108,68 @@ namespace csf {
         }
 
     }
+
+
+    void write_lasfile_tmp(const std::string filename, const std::vector<MyPoint>& pointcloud, const std::vector<int>& class_labels) {
+        /*
+        Function to write a new LAS file with point labels (for the LAS classification field)
+
+        Inputs:
+          filename:   the filename to write the LAS file to
+          pointcloud: input point cloud (a vector of Points),
+          Labels:     Contains point labels. Should be a vector of ints of the same size as pointcloud (ie. one label for each point in the same order as pointcloud). Uses LAS classification codes, ie 2 = ground. 1 = unclassified.
+        */
+        LASwriteOpener laswriteopener;
+        laswriteopener.set_file_name(filename.c_str());
+
+        LASheader lasheader;
+        lasheader.x_scale_factor = 0.01;
+        lasheader.y_scale_factor = 0.01;
+        lasheader.z_scale_factor = 0.01;
+        lasheader.x_offset = 0.0;
+        lasheader.y_offset = 0.0;
+        lasheader.z_offset = 0.0;
+        lasheader.point_data_format = 0;
+        lasheader.point_data_record_length = 20;
+
+        LASpoint laspoint;
+        laspoint.init(&lasheader, lasheader.point_data_format, lasheader.point_data_record_length, 0);
+
+        LASwriter* laswriter = laswriteopener.open(&lasheader);
+        if (laswriter == 0)
+        {
+            std::cerr << "ERROR: could not open laswriter\n";
+            exit(1);
+        }
+
+        if (pointcloud.size() != class_labels.size()) {
+            std::cerr << "ERROR: points has a different size than class_labels\n";
+            exit(1);
+        }
+
+        for (size_t i = 0; i < pointcloud.size(); ++i) {
+            const MyPoint& p = pointcloud[i];
+            const int& label = class_labels[i];
+
+            laspoint.set_x(p.x);
+            laspoint.set_y(p.y);
+            laspoint.set_z(p.z);
+
+            /*
+            laspoint.set_x(p.x);
+            laspoint.set_y(p.y);
+            laspoint.set_z(p.z);*/
+
+            laspoint.set_classification(label);
+
+            laswriter->write_point(&laspoint);
+            laswriter->update_inventory(&laspoint);
+        }
+
+        laswriter->update_header(&lasheader, TRUE);
+        laswriter->close();
+        delete laswriter;
+    }
 }
 
 
@@ -148,6 +210,7 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     //         break;
     //}
 
+    /*
     std::cout << pointcloud.size() << '\n';
     csf::MyPoint p1; // pmin
     csf::MyPoint p2; // pmax
@@ -156,7 +219,7 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     std::cout << "biggest x: " << p2.x << " biggest y: " << p2.y << " biggest z: " << p2.z << '\n';
 
     csf::Vector3d v1(pointcloud[0], pointcloud[100]);
-    std::cout << v1.vector_length() << '\n';
+    std::cout << v1.vector_length() << '\n';*/
 
 
     //-- TIP
@@ -173,10 +236,26 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
         double distance = res.second; //value of double too big ?
     }*/
 
+    std::vector<csf::MyPoint> inverse_test;
+    inverse_test.reserve(pointcloud.size());
+    std::size_t i = 0;
+    for (auto p : pointcloud) {
+        //std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z()  << ")" << '\n';
+        inverse_test.emplace_back(csf::MyPoint(p[0], p[1], -p[2]));
+        ++i;
+        if (i == pointcloud.size())
+            break;
+    }
+
+
+
     //-- TIP
     //-- write the results to a new LAS file
     //std::vector<int> class_labels(pointcloud.size()); // Initialized with 0
     //write_lasfile(jparams["output_las"], pointcloud, class_labels);
+
+    std::vector<int> class_labels(inverse_test.size()); // Initialized with 0
+    csf::write_lasfile_tmp(jparams["output_las"], inverse_test, class_labels);
 }
 
 
@@ -281,3 +360,4 @@ void write_lasfile(const std::string filename, const std::vector<Point>& pointcl
     laswriter->close();
     delete laswriter;
 }
+
