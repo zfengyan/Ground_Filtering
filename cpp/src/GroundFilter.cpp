@@ -155,11 +155,6 @@ namespace csf {
             laspoint.set_y(p.y);
             laspoint.set_z(p.z);
 
-            /*
-            laspoint.set_x(p.x);
-            laspoint.set_y(p.y);
-            laspoint.set_z(p.z);*/
-
             laspoint.set_classification(label);
 
             laswriter->write_point(&laspoint);
@@ -236,6 +231,9 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
         double distance = res.second; //value of double too big ?
     }*/
 
+    /*
+    * Inverse the original pointcloud
+    * 
     std::vector<csf::MyPoint> inverse_test;
     inverse_test.reserve(pointcloud.size());
     std::size_t i = 0;
@@ -245,17 +243,19 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
         ++i;
         if (i == pointcloud.size())
             break;
-    }
+    }*/
 
-
+    csf::Particle particle1;
+    std::cout << particle1.mass << '\n';
 
     //-- TIP
     //-- write the results to a new LAS file
     //std::vector<int> class_labels(pointcloud.size()); // Initialized with 0
     //write_lasfile(jparams["output_las"], pointcloud, class_labels);
 
-    std::vector<int> class_labels(inverse_test.size()); // Initialized with 0
-    csf::write_lasfile_tmp(jparams["output_las"], inverse_test, class_labels);
+    //output inversed pointcloud
+    //std::vector<int> class_labels(inverse_test.size()); // Initialized with 0
+    //csf::write_lasfile_tmp(jparams["output_las"], inverse_test, class_labels);
 }
 
 

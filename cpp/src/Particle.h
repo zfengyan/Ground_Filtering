@@ -3,6 +3,8 @@
 
 #include "Vector3d.h"
 
+#define LOWEST_HEIGHT_INF -99999
+
 namespace csf {
 	/*
 	* Pre-compute the scale factors according to the rigidness(0 to 3)
@@ -28,7 +30,7 @@ namespace csf {
 	*/
 	class Particle {
 	public:
-		double mass; // set to 1
+		double mass; // mass of an particle, set to 1
 		bool movable; // initialize: true
 		Vector3d cur_pos; // current position of the particle
 		Vector3d pre_pos; // previous position of the particle, used for iterating positions
@@ -37,14 +39,65 @@ namespace csf {
 		std::size_t col;
 
 		Vector3d acceleration; 
-		double time_stamp_2; //pre-compute the squared time_stamp: time_stamp_2
+		double timestamp_2; //pre-compute the squared timestamp: timestamp_2
 
 		std::vector<Particle*> neighbours; // neighbour particles of the current particle
-		double CorrespondingLiDAR_Hight; // the height(z value) of the CP(corresponding point in LiDAR point)
+		double IntersectionHeightValue; // the height(z value) of the CP(corresponding point in LiDAR point)
+		std::size_t correspondLiDAR_index; // the index of corresponding LiDAR point
+
+	public:
+		Particle():
+			mass(1),
+			movable(true),
+			cur_pos(Vector3d(0, 0, 0)),
+			pre_pos(Vector3d(0, 0, 0)),
+			row(0),
+			col(0),
+			acceleration(Vector3d(0, 0, 0)),
+			timestamp_2(0),
+			IntersectionHeightValue(LOWEST_HEIGHT_INF),
+			correspondLiDAR_index(0){}
+
+		Particle(const Vector3d& pos, const double& timestamp_squared):
+			mass(1),
+			movable(true),
+			cur_pos(pos),
+			pre_pos(Vector3d(0, 0, 0)),
+			row(0),
+			col(0),
+			acceleration(Vector3d(0, 0, 0)),
+			timestamp_2(timestamp_squared),
+			IntersectionHeightValue(LOWEST_HEIGHT_INF),
+			correspondLiDAR_index(0){}
+	public:
+
+		void add_force(const Vector3d& f) {
+			acceleration += f; // a = f/m, mass is assumed as 1
+		}
+
+		void offset(const Vector3d& v) {
+			if (movable)cur_pos += v;
+		}
+
+		void set_unmovable() {
+			movable = false;
+		}
+
+		/*
+		* update a particle's position(by gravity)
+		* using verlet integration: 
+		* https://www.algorithm-archive.org/contents/verlet_integration/verlet_integration.html
+		*/
+		void update_position_gravity();
+
+		/*
+		* update a particle's position
+		* constrained by the "virtual spring" between two particles
+		*/
+		void update_position_spring();
 
 	};
 
 }
 
 #endif // !_PARTICLE_H_
-
