@@ -23,7 +23,7 @@
 #include <CGAL/Search_traits_3.h>
 
 // -- csf Dependencies
-#include "Vector3d.h"
+#include "Particle.h"
 
 
 void groundfilter_tin(const std::vector<Point>& pointcloud, const json& jparams) {
@@ -154,6 +154,10 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     csf::bounding_box(pointcloud, p1, p2);
     std::cout << "smallest x: " << p1.x << " smallest y: " << p1.y << " smallest z: " << p1.z << '\n';
     std::cout << "biggest x: " << p2.x << " biggest y: " << p2.y << " biggest z: " << p2.z << '\n';
+
+    csf::Vector3d v1(pointcloud[0], pointcloud[100]);
+    std::cout << v1.vector_length() << '\n';
+
 
     //-- TIP
     //-- construct and query kd-tree:

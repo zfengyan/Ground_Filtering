@@ -1,7 +1,8 @@
 #ifndef _VECTOR_H_
 #define _VECTOR_H_
 
-#include "GroundFilter.h" 
+#include "GroundFilter.h" // Using Point
+
 
 namespace csf {
 
