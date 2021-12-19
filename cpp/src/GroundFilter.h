@@ -7,6 +7,8 @@
   [YOUR NAME] 
   [YOUR STUDENT NUMBER] 
 */
+#ifndef _GROUND_FILTER_H_
+#define _GROUND_FILTER_H_
 
 #include <string>
 #include <vector>
@@ -22,20 +24,23 @@ using json = nlohmann::json;
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef Kernel::Point_3 Point;
 
+namespace csf {
+	struct MyPoint {
+		double x;
+		double y;
+		double z;
 
-struct MyPoint {
-	double x;
-	double y;
-	double z;
+		MyPoint() :x(0), y(0), z(0) {}
+		MyPoint(const double& p_x, const double& p_y, const double& p_z) :
+			x(p_x), y(p_y), z(p_z) {}
 
-	MyPoint():x(0),y(0),z(0){}
-	MyPoint(const double& p_x, const double& p_y, const double& p_z):
-		x(p_x),y(p_y),z(p_z){}
-
-};
+	};
+}
 
 std::vector<Point> read_lasfile(const json& jparams);
 void write_lasfile(const std::string filename, const std::vector<Point>& pointcloud, const std::vector<int>& class_labels);
 
 void groundfilter_tin(const std::vector<Point>& pointcloud, const json& jparams);
 void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams);
+
+#endif

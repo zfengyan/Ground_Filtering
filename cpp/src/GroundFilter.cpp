@@ -110,65 +110,67 @@ namespace csf {
 
 
 void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams) {
-  /*
-  !!! TO BE COMPLETED !!!
+    /*
+    !!! TO BE COMPLETED !!!
     
-  Function that performs ground filtering using CSF and writes the result to a new LAS file.
+    Function that performs ground filtering using CSF and writes the result to a new LAS file.
 
-  !!! You are free to subdivide the functionality of this function into several functions !!!
+    !!! You are free to subdivide the functionality of this function into several functions !!!
     
-  Inputs:
-    pointcloud: input point cloud (an Nx3 numpy array),
-    jparams: a dictionary with all the parameters that are to be used in this function:
-      - resolution:     resolution of the cloth grid,
-      - epsilon_zmax:   tolerance to stop the iterations,
-      - epsilon_ground: threshold used to classify ground points,
-      - output_las:     path to output .las file that contains your ground classification
-  */
-  typedef CGAL::Search_traits_3<Kernel> TreeTraits;
-  typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
-  typedef Neighbor_search::Tree Tree;
+    Inputs:
+        pointcloud: input point cloud (an Nx3 numpy array),
+        jparams: a dictionary with all the parameters that are to be used in this function:
+        - resolution:     resolution of the cloth grid,
+        - epsilon_zmax:   tolerance to stop the iterations,
+        - epsilon_ground: threshold used to classify ground points,
+        - output_las:     path to output .las file that contains your ground classification
+    */
 
-  // double resolution = j["resolution"];
-  // double epsilon_zmax = j["epsilon_zmax"];
-  // double epsilon_ground = j["epsilon_ground"];
-  // std::string output_las = jparams["output_las"];
+    typedef CGAL::Search_traits_3<Kernel> TreeTraits;
+    typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
+    typedef Neighbor_search::Tree Tree;
 
-  // //-- print the first 5 points in the pointcloud, which are CGAL Point_3
-  // //-- https://doc.cgal.org/latest/Kernel_23/classCGAL_1_1Point__3.html
-   //int i = 0;
-   //for (auto p : pointcloud) {
-   //     //std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z()  << ")" << '\n';
-   //     std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z() << ")" << '\n';
-   //     ++i;
-   //     if (i == 5) 
-   //         break;
-   //}
-   std::cout << pointcloud.size() << '\n';
-   MyPoint p1;
-   MyPoint p2;
-   csf::bounding_box(pointcloud, p1, p2);
-   std::cout << "smallest x: " << p1.x << "smallest y: " << p1.y << "smallest z: " << p1.z << '\n';
-   std::cout << "biggest x: " << p2.x << "biggest y: " << p2.y << "biggest z: " << p2.z << '\n';
+    // double resolution = j["resolution"];
+    // double epsilon_zmax = j["epsilon_zmax"];
+    // double epsilon_ground = j["epsilon_ground"];
+    // std::string output_las = jparams["output_las"];
 
-  //-- TIP
-  //-- construct and query kd-tree:
-  // https://doc.cgal.org/latest/Spatial_searching/index.html#title5
-  //
-  /* Tree tree(pointcloud.begin(), pointcloud.end());  
-   const unsigned int N = 1;
-   Point query_point = Point(0,0,0);
-   Neighbor_search search_result(tree, query_point, N);
+    // //-- print the first 5 points in the pointcloud, which are CGAL Point_3
+    // //-- https://doc.cgal.org/latest/Kernel_23/classCGAL_1_1Point__3.html
+    //int i = 0;
+    //for (auto p : pointcloud) {
+    //     //std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z()  << ")" << '\n';
+    //     std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z() << ")" << '\n';
+    //     ++i;
+    //     if (i == 5) 
+    //         break;
+    //}
+
+    std::cout << pointcloud.size() << '\n';
+    csf::MyPoint p1; // pmin
+    csf::MyPoint p2; // pmax
+    csf::bounding_box(pointcloud, p1, p2);
+    std::cout << "smallest x: " << p1.x << " smallest y: " << p1.y << " smallest z: " << p1.z << '\n';
+    std::cout << "biggest x: " << p2.x << " biggest y: " << p2.y << " biggest z: " << p2.z << '\n';
+
+    //-- TIP
+    //-- construct and query kd-tree:
+    // https://doc.cgal.org/latest/Spatial_searching/index.html#title5
+    //
+    /* Tree tree(pointcloud.begin(), pointcloud.end());  
+    const unsigned int N = 1;
+    Point query_point = Point(0,0,0);
+    Neighbor_search search_result(tree, query_point, N);
   
-   for(auto res : search_result) {
-     Point neighbour_point = res.first;
-     double distance = res.second; //value of double too big ?
-   }*/
+    for(auto res : search_result) {
+        Point neighbour_point = res.first;
+        double distance = res.second; //value of double too big ?
+    }*/
 
-  //-- TIP
-  //-- write the results to a new LAS file
-  //std::vector<int> class_labels(pointcloud.size()); // Initialized with 0
-  //write_lasfile(jparams["output_las"], pointcloud, class_labels);
+    //-- TIP
+    //-- write the results to a new LAS file
+    //std::vector<int> class_labels(pointcloud.size()); // Initialized with 0
+    //write_lasfile(jparams["output_las"], pointcloud, class_labels);
 }
 
 
