@@ -22,6 +22,8 @@
 #include <CGAL/Orthogonal_k_neighbor_search.h>
 #include <CGAL/Search_traits_3.h>
 
+// -- csf Dependencies
+#include "Vector3d.h"
 
 
 void groundfilter_tin(const std::vector<Point>& pointcloud, const json& jparams) {
