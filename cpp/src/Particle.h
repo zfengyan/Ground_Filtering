@@ -49,7 +49,7 @@ namespace csf {
 		Particle():
 			mass(1),
 			movable(true),
-			cur_pos(Vector3d(0, 0, 0)),
+			cur_pos(Vector3d(0, 0, 0)), 
 			pre_pos(Vector3d(0, 0, 0)),
 			row(0),
 			col(0),
@@ -62,7 +62,7 @@ namespace csf {
 			mass(1),
 			movable(true),
 			cur_pos(pos),
-			pre_pos(Vector3d(0, 0, 0)),
+			pre_pos(pos), // for verlet integration, initialize cur_pos = pre_pos
 			row(0),
 			col(0),
 			acceleration(Vector3d(0, 0, 0)),
@@ -81,6 +81,16 @@ namespace csf {
 
 		void set_unmovable() {
 			movable = false;
+		}
+
+		void set_acceleration(const double& x, const double& y, const double& z) {
+			acceleration.v[0] = x;
+			acceleration.v[1] = y;
+			acceleration.v[2] = z;
+		}
+
+		void set_timestamp_2(const double& time_squared) {
+			timestamp_2 = time_squared;
 		}
 
 		/*

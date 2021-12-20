@@ -245,8 +245,19 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
             break;
     }*/
 
-    csf::Particle particle1;
+    csf::Particle particle1(csf::Vector3d(0,0,0),0.0001);
     std::cout << particle1.mass << '\n';
+    particle1.set_acceleration(0, 0, -10);
+
+    particle1.cur_pos.print_self();
+    for (int i = 0; i < 5; ++i) {
+        particle1.update_position_gravity();
+        particle1.cur_pos.print_self();
+    }
+        
+
+
+    //particle1
 
     //-- TIP
     //-- write the results to a new LAS file

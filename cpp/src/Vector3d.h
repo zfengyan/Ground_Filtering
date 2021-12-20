@@ -48,6 +48,14 @@ namespace csf {
 
 		double dot_product(const Vector3d& other)const;
 		Vector3d cross_product(const Vector3d& other)const;
+
+		//useful for debugging
+		void print_self() {
+			std::cout << "( " << v[0] << ", " << v[1] << ", " << v[2] << " )" << '\n';
+		}
+
+
+
 	};
 }
 
