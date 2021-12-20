@@ -41,7 +41,12 @@ namespace csf {
 		Vector3d acceleration; 
 		double timestamp_2; //pre-compute the squared timestamp: timestamp_2
 
-		std::vector<Particle*> neighbours; // neighbour particles of the current particle
+		/*
+		* neighbour particles of the current particle
+		* type: pointer of Particle
+		*/
+		std::vector<Particle*> neighbours; 
+
 		double IntersectionHeightValue; // the height(z value) of the CP(corresponding point in LiDAR point)
 		std::size_t correspondLiDAR_index; // the index of corresponding LiDAR point
 
@@ -104,7 +109,7 @@ namespace csf {
 		* update a particle's position
 		* constrained by the "virtual spring" between two particles
 		*/
-		void update_position_spring();
+		void update_position_spring(const int& rigidness);
 
 	};
 
