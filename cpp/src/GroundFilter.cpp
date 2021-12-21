@@ -262,7 +262,6 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     /*
     * update_position_spring
     * parameter: rigidness
-    */
     csf::Particle p1(csf::Vector3d(0, 0, 20), 0.0001);
     csf::Particle p2(csf::Vector3d(0, 0, 0), 0.0001);
     p2.neighbours.emplace_back(&p1);
@@ -281,7 +280,7 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     std::cout << "p1 after spring:" << '\n';
     p1.cur_pos.print_self();
     std::cout << "p2 after spring:" << '\n';
-    p2.cur_pos.print_self();
+    p2.cur_pos.print_self();*/
 
 
     //-- TIP

@@ -23,7 +23,7 @@ add_definitions(
 add_executable(hw03 
   src/main.cpp
   src/GroundFilter.cpp
- "src/Vector3d.h" "src/Vector3d.cpp" "src/Particle.h"  "src/Particle.cpp")
+ "src/Vector3d.h" "src/Vector3d.cpp" "src/Particle.h"  "src/Particle.cpp" "src/Cloth.h")
 target_link_libraries(hw03 PRIVATE
   CGAL::CGAL CGAL::CGAL_Core
   LASlib
