@@ -245,6 +245,10 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
             break;
     }*/
 
+    /*
+    * update_position_gravity
+    * using verlet integration
+    * 
     csf::Particle particle1(csf::Vector3d(0,0,0),0.0001);
     std::cout << particle1.mass << '\n';
     particle1.set_acceleration(0, 0, -10);
@@ -253,11 +257,32 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     for (int i = 0; i < 5; ++i) {
         particle1.update_position_gravity();
         particle1.cur_pos.print_self();
-    }
-        
+    }*/
 
+    /*
+    * update_position_spring
+    * parameter: rigidness
+    */
+    csf::Particle p1(csf::Vector3d(0, 0, 20), 0.0001);
+    csf::Particle p2(csf::Vector3d(0, 0, 0), 0.0001);
+    p2.neighbours.emplace_back(&p1);
+    p1.neighbours.emplace_back(&p2);
+    int rigidness(3); // rigidness: 0,1,2,3
+    //p1.set_unmovable();
 
-    //particle1
+    std::cout << "p1 cur_pos: " << '\n';
+    p1.cur_pos.print_self();
+    std::cout << "p2 cur_pos: " << '\n';
+    p2.cur_pos.print_self();
+
+    std::cout << '\n';
+    p1.update_position_spring(rigidness);
+
+    std::cout << "p1 after spring:" << '\n';
+    p1.cur_pos.print_self();
+    std::cout << "p2 after spring:" << '\n';
+    p2.cur_pos.print_self();
+
 
     //-- TIP
     //-- write the results to a new LAS file

@@ -10,20 +10,20 @@ namespace csf {
 	* Pre-compute the scale factors according to the rigidness(0 to 3)
 	* Rigidness: 0,1,2,3
 
-	* For particleMove1, which means one of the two particles is unmovable, then move the other one only:
-	* if rigidness = 0: particleMove1 = 0
-	* if rigidness = 1: particleMove1 = 0.3, (scale factor of the total distance)
-	* if rigidness = 2: particleMove1 = (1-0.3)*0.3+0.3 = 0.51
-	* if rigidness = 3: particleMove1 = (1-0.51)*0.3+0.51 = 657
+	* For singleMove, which means one of the two particles is unmovable, then move the other one only:
+	* if rigidness = 0: singleMove = 0
+	* if rigidness = 1: singleMove = 0.3, (scale factor of the total distance)
+	* if rigidness = 2: singleMove = (1-0.3)*0.3+0.3 = 0.51
+	* if rigidness = 3: singleMove = (1-0.51)*0.3+0.51 = 657
 
-	* For particleMove2, both of the two particles are moved towards each other.
-	* if rigidness = 0: particleMove2 = 0
-	* if rigidness = 1: particleMove2 = 0.3, (scale factor of the total distance)
-	* if rigidness = 2: particleMove2 = (1-0.3*2)*0.3+0.3 = 0.42
-	* if rigidness = 3: particleMove2 = (1-0.42*2)*0.3+0.42 = 0.468
+	* For doubleMove, both of the two particles are moved towards each other.
+	* if rigidness = 0: doubleMove = 0
+	* if rigidness = 1: doubleMove = 0.3, (scale factor of the total distance)
+	* if rigidness = 2: doubleMove = (1-0.3*2)*0.3+0.3 = 0.42
+	* if rigidness = 3: doubleMove = (1-0.42*2)*0.3+0.42 = 0.468
 	*/
-	const double particleMove1[4]{ 0,0.3,0.51,0.657 };
-	const double particleMove2[4]{ 0,0.3,0.42,0.468 };
+	const double singleMove[4]{ 0,0.3,0.51,0.657 };
+	const double doubleMove[4]{ 0,0.3,0.42,0.468 };
 
 	/*
 	* class Particle: a single particle forming the cloth in 3D space
@@ -80,7 +80,7 @@ namespace csf {
 			acceleration += f; // a = f/m, mass is assumed as 1
 		}
 
-		void offset(const Vector3d& v) {
+		void offset_position(const Vector3d& v) {
 			if (movable)cur_pos += v;
 		}
 

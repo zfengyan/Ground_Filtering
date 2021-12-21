@@ -32,6 +32,36 @@ namespace csf {
 	*/
 	void Particle::update_position_spring(const int& rigidness) {
 		
+		for (std::size_t i = 0; i < neighbours.size(); ++i) {
+			Particle* that(neighbours[i]);
+			Vector3d height_diff(0, 0, that->cur_pos.v[2] - this->cur_pos.v[2]);
 
+			if (this->movable && that->movable) {
+
+				// set correction vector
+				Vector3d correction_vector(height_diff *
+					(rigidness > 3 ? 0.5 : doubleMove[rigidness]));
+
+				// adjust the position of the current particle and the neighbour
+				this->offset_position(correction_vector);
+				that->offset_position(-correction_vector); // update position of p: minus correction_vector
+			}
+			
+			else if (this->movable && !that->movable) {
+				Vector3d correction_vector(height_diff *
+					(rigidness > 3 ? 1 : singleMove[rigidness]));
+
+				this->offset_position(correction_vector);
+			}
+
+			else if (!this->movable && that->movable) {
+				Vector3d correction_vector(height_diff *
+					(rigidness > 3 ? 1 : singleMove[rigidness]));
+
+				that->offset_position(-correction_vector);
+			}
+
+		}
+		
 	}
 }
