@@ -23,7 +23,7 @@
 #include <CGAL/Search_traits_3.h>
 
 // -- csf Dependencies
-#include "Particle.h"
+#include "Cloth.h"
 
 
 void groundfilter_tin(const std::vector<Point>& pointcloud, const json& jparams) {
@@ -165,6 +165,59 @@ namespace csf {
         laswriter->close();
         delete laswriter;
     }
+
+
+    /*
+    * output a cloth(its particles)
+    */
+    void write_lasfile_particles(const std::string filename, const std::vector<Particle>& particles, const std::vector<int>& class_labels) {
+     
+        LASwriteOpener laswriteopener;
+        laswriteopener.set_file_name(filename.c_str());
+
+        LASheader lasheader;
+        lasheader.x_scale_factor = 0.01;
+        lasheader.y_scale_factor = 0.01;
+        lasheader.z_scale_factor = 0.01;
+        lasheader.x_offset = 0.0;
+        lasheader.y_offset = 0.0;
+        lasheader.z_offset = 0.0;
+        lasheader.point_data_format = 0;
+        lasheader.point_data_record_length = 20;
+
+        LASpoint laspoint;
+        laspoint.init(&lasheader, lasheader.point_data_format, lasheader.point_data_record_length, 0);
+
+        LASwriter* laswriter = laswriteopener.open(&lasheader);
+        if (laswriter == 0)
+        {
+            std::cerr << "ERROR: could not open laswriter\n";
+            exit(1);
+        }
+
+        if (particles.size() != class_labels.size()) {
+            std::cerr << "ERROR: points has a different size than class_labels\n";
+            exit(1);
+        }
+
+        for (size_t i = 0; i < particles.size(); ++i) {
+            const Particle& p = particles[i];
+            const int& label = class_labels[i];
+
+            laspoint.set_x(p.cur_pos.v[0]);
+            laspoint.set_y(p.cur_pos.v[1]);
+            laspoint.set_z(p.cur_pos.v[2]);
+
+            laspoint.set_classification(label);
+
+            laswriter->write_point(&laspoint);
+            laswriter->update_inventory(&laspoint);
+        }
+
+        laswriter->update_header(&lasheader, TRUE);
+        laswriter->close();
+        delete laswriter;
+    }
 }
 
 
@@ -231,19 +284,6 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
         double distance = res.second; //value of double too big ?
     }*/
 
-    /*
-    * Inverse the original pointcloud
-    * 
-    std::vector<csf::MyPoint> inverse_test;
-    inverse_test.reserve(pointcloud.size());
-    std::size_t i = 0;
-    for (auto p : pointcloud) {
-        //std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z()  << ")" << '\n';
-        inverse_test.emplace_back(csf::MyPoint(p[0], p[1], -p[2]));
-        ++i;
-        if (i == pointcloud.size())
-            break;
-    }*/
 
     /*
     * update_position_gravity
@@ -283,14 +323,37 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     p2.cur_pos.print_self();*/
 
 
+    /*
+    * Initialize the cloth
+    */
+    csf::Cloth c1(100, 100, 3, 1, 1, 0.01, csf::Vector3d(0, 0, 0));
+    std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
+    csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
+
+
     //-- TIP
     //-- write the results to a new LAS file
     //std::vector<int> class_labels(pointcloud.size()); // Initialized with 0
     //write_lasfile(jparams["output_las"], pointcloud, class_labels);
 
+
+    /*
+    * Inverse the original pointcloud and output
+    *
+    std::vector<csf::MyPoint> inverse_test;
+    inverse_test.reserve(pointcloud.size());
+    std::size_t i = 0;
+    for (auto p : pointcloud) {
+        //std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z()  << ")" << '\n';
+        inverse_test.emplace_back(csf::MyPoint(p[0], p[1], -p[2]));
+        ++i;
+        if (i == pointcloud.size())
+            break;
+    }
     //output inversed pointcloud
-    //std::vector<int> class_labels(inverse_test.size()); // Initialized with 0
-    //csf::write_lasfile_tmp(jparams["output_las"], inverse_test, class_labels);
+    std::vector<int> class_labels(inverse_test.size()); // Initialized with 0
+    csf::write_lasfile_tmp(jparams["output_las"], inverse_test, class_labels);
+    */
 }
 
 

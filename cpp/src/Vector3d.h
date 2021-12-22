@@ -37,19 +37,19 @@ namespace csf {
 			v[2] = pb[2] - pa[2]; // z of vector
 		} // vector: ab(point to b)
 
-		double vector_length()const;
-		Vector3d normalized_vector()const;
+		double vector_length();
+		Vector3d normalized_vector();
 
 		void operator+=(const Vector3d& other);// NB: this operator would change the original vector
-		Vector3d operator+(const Vector3d& other)const;
-		Vector3d operator-(const Vector3d& other)const;
-		Vector3d operator*(const double& s)const;
-		Vector3d operator/(const double& s)const;
+		Vector3d operator+(const Vector3d& other);
+		Vector3d operator-(const Vector3d& other);
+		Vector3d operator*(const double& s);
+		Vector3d operator/(const double& s);
 
-		double dot_product(const Vector3d& other)const;
-		Vector3d cross_product(const Vector3d& other)const;
+		double dot_product(const Vector3d& other);
+		Vector3d cross_product(const Vector3d& other);
 
-		Vector3d operator-() const{
+		Vector3d operator-(){
 			return Vector3d(-v[0], -v[1], -v[2]);
 		}
 

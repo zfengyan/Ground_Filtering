@@ -12,17 +12,36 @@ namespace csf {
 	class Cloth {
 	public:
 		std::vector<Particle> particles; // store all particles
-		std::size_t width; // number of particles in width
-		std::size_t height; // number of particles in height
+		std::size_t nrows; // number of particles in height, x-axis in 3D space
+		std::size_t ncols; // number of particles in weight, y-axis in 3D space
+
+		int rigidness; //rigidness of cloth(rigidness: 0,1,2,3 ... )
+		double row_step; // depends on the row size of pointcloud and the resolution(user defined)
+		double col_step; // depends on the column size of pointcloud and the resolution(user defined)
+		double timestamp; // each timestamp stands for each frame
+		
+		Vector3d initial_position; // the initial position of the first particle of cloth
 
 	public:
+
+		/*
+		* IMPORTANT Construtor 
+		*/
+		Cloth(
+			const std::size_t& nrows_param, 
+			const std::size_t& ncols_param,
+			const int& rigidness_param, 
+			const double& row_step_param,
+			const double& col_step_param, 
+			const double& timestamp_param,
+			const Vector3d& initial_param); 
 
 		/*
 		* @brief: get the pointer of particle: particels[index]
 		* @param: row, col -- the position in the cloth grid
 		*/
-		Particle* get_particle(const std::size_t& row, const std::size_t& col)const {
-			return &particles[col * width + row];
+		Particle* get_particle(const std::size_t& row, const std::size_t& col){
+			return &particles[col + row * ncols];
 		}
 
 
@@ -36,8 +55,8 @@ namespace csf {
 		}
 
 
-		std::size_t get_cloth_size()const {
-			return width * height;
+		std::size_t get_cloth_size(){
+			return nrows * ncols;
 		}
 
 	};
