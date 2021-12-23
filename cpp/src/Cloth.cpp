@@ -21,15 +21,16 @@ namespace csf {
 		particles.reserve(nrows * ncols); // vector for big size, use reserve() first
 		double timestamp_squared(timestamp * timestamp); // pre-compute the timestamp_2 then pass it to particle
 
+
 		/*
 		* create particles in a grid, starting from the first particle
 		* NB: <= instead of < -- cover all sample points
 		* i.e: bmax-bmin = 99.998, bmin=0, bmax=99.998
-		* Rounded up: 0 - 100, nrows or ncols = 100
-		* therefore if i or j starts from 0, then it can be equal to 100(use "<=")
+		* Rounded up: 0 - 100, nrows or ncols = 100 + 1 = 101
 		*/
-		for (std::size_t i = 0; i <= nrows; ++i) {
-			for (std::size_t j = 0; j <= ncols; ++j) {
+
+		for (std::size_t i = 0; i < nrows; ++i) {
+			for (std::size_t j = 0; j < ncols; ++j) {
 				Vector3d pos(initial_position.v[0] + i * row_step,
 							 initial_position.v[1] + j * col_step,
 							 initial_position.v[2]);
@@ -39,6 +40,33 @@ namespace csf {
 				particles[j + i * ncols].col = j;
 			}
 		}
+
+
+		/*
+		* Set the virtual spring connection between (directly)adjacent neighbors
+		* Define 'block': every small square formed with 4 particles
+		* For each 'block', starting from the up-left corner particle: (row, col)
+		* Connect: 
+		* (row, col) - - (row, col+1)
+		* (row, col) - - (row+1, col)
+		* (row, col) - - (row+1, col+1)
+		* (row, col+1) - - (row+1, col)
+		* Connect boundary:
+		* if (j < ncols - 1): contains the process of the bottom row(row = nrows - 1)
+		* if (i < nrows-1): contains the process of the rightmost column(col = ncols - 1)
+		*/
+
+		for (std::size_t i = 0; i < nrows; ++i) {
+			for (std::size_t j = 0; j < ncols; ++j) {
+				if (j < ncols - 1)set_virtual_spring(get_particle(i, j), get_particle(i, j + 1));
+				if (i < nrows - 1)set_virtual_spring(get_particle(i, j), get_particle(i + 1, j));
+				if ((i < nrows - 1) && (j < ncols - 1)) {
+					set_virtual_spring(get_particle(i, j), get_particle(i + 1, j + 1));
+					set_virtual_spring(get_particle(i, j + 1), get_particle(i + 1, j));
+				}
+			}
+		}
+
 	}
 
 }
