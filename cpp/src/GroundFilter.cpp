@@ -335,10 +335,10 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     */
     std::size_t NROWS((std::size_t)(ceil(pmax.x - pmin.x)+1)), NCOLS((std::size_t)(ceil(pmax.y - pmin.y)+1));
     std::cout << NROWS << " " << NCOLS << '\n';
-    csf::Cloth c1(50, 50, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
-    for (std::size_t i = 0; i < 50; ++i) {
-        for (std::size_t j = 0; j < 50; ++j) {
-            std::cout << c1.particles[j + i * 50].neighbours.size() << ' ';
+    csf::Cloth c1(3, 2, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
+    for (std::size_t i = 0; i < 3; ++i) {
+        for (std::size_t j = 0; j < 2; ++j) {
+            std::cout << c1.particles[j + i * 2].neighbours.size() << ' ';
         }
         std::cout << '\n';
     }

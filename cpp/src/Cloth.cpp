@@ -67,6 +67,26 @@ namespace csf {
 			}
 		}
 
+
+		/*
+		* Set the virtual spring connection between secondary neighbours
+		* Does the "flexion spring" have a significant impact on cloth?
+		* possible numbers of neighbours of one particle: 
+		* 3(min) - - a 2*2 grid
+		* 4,5,6,8,10,11,13 ... (any more values?)
+		* 16(max) - - 8 direct springs and 8 second springs
+		*/
+		for (std::size_t i = 0; i < nrows; ++i) {
+			for (std::size_t j = 0; j < ncols; ++j) {
+				if (j < ncols - 2)set_virtual_spring(get_particle(i, j), get_particle(i, j + 2));
+				if (i < nrows - 2)set_virtual_spring(get_particle(i, j), get_particle(i + 2, j));
+				if ((i < nrows - 2) && (j < ncols - 2)) {
+					set_virtual_spring(get_particle(i, j), get_particle(i + 2, j + 2));
+					set_virtual_spring(get_particle(i, j + 2), get_particle(i + 2, j));
+				}
+			}
+		}
+
 	}
 
 }
