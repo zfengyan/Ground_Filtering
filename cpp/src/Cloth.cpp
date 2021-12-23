@@ -103,11 +103,32 @@ namespace csf {
 	void Cloth::update_cloth_position(){
 
 		// update particle positions by gravity
+		// #pragma omp parallel for
 		for (std::size_t i = 0; i < particles.size(); ++i) {
 			particles[i].update_position_gravity();
 		}
 
+		// update particle positions by virtual spring
+		for (std::size_t i = 0; i < particles.size(); ++i) {
+			particles[i].update_position_spring(rigidness);
+		}
 	
 	}
 
+
+	/*
+	* calculate the maximum height difference(pre_pos and cur_pos)
+	* for all particles in the cloth
+	*/
+	double Cloth::calculate_max_diff()
+	{
+		double max_diff(0);
+		for (std::size_t i = 0; i < particles.size(); ++i) {
+			double height_diff(fabs(particles[i].pre_pos.v[2] - particles[i].cur_pos.v[2]));
+			max_diff = height_diff > max_diff ? height_diff : max_diff;
+		}
+		return max_diff;
+	}
+
+	
 }

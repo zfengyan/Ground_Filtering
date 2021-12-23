@@ -6,6 +6,7 @@
 */
 
 #include "Particle.h"
+#include <cmath>
 
 namespace csf {
 
@@ -78,6 +79,15 @@ namespace csf {
 		* gravity and "virtual spring"
 		*/
 		void update_cloth_position();
+
+
+		/*
+		* @brief: calculate the maximum height difference
+		* between one particle's pre_pos and cur_pos amoung all
+		* the cloth particles
+		*/
+		double calculate_max_diff();
+
 
 	};
 

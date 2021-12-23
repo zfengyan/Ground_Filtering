@@ -361,7 +361,7 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
 
     int count_time(0);
-    while (count_time != 169) {
+    while (count_time != 3) {
         c1.update_cloth_position();
         ++count_time;
     } // 1/2*g*t^2 = 14.06
@@ -374,6 +374,10 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
         std::cout << '\n';
     }
 
+    std::cout << '\n';
+    std::cout << "calculate max height difference: " << '\n';
+
+    std::cout << c1.calculate_max_diff() << '\n';
 
     //csf::Cloth c1(NROWS, NCOLS, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
     //std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
