@@ -24,6 +24,7 @@
 
 // -- csf Dependencies
 #include "Cloth.h"
+#include <cmath>
 
 
 void groundfilter_tin(const std::vector<Point>& pointcloud, const json& jparams) {
@@ -324,9 +325,16 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
 
     /*
-    * Initialize the cloth
+    * @brief: find bounding box
     */
-    csf::Cloth c1(100, 100, 3, 1, 1, 0.01, csf::Vector3d(0, 0, 0));
+    csf::MyPoint pmin, pmax;
+    bounding_box(pointcloud, pmin, pmax);
+
+    /*
+    * @brief: Initialize the cloth
+    */
+    std::size_t NROWS((std::size_t)ceil(pmax.x - pmin.x)), NCOLS((std::size_t)ceil(pmax.y - pmin.y));
+    csf::Cloth c1(NROWS, NCOLS, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
     std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
     csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
 
