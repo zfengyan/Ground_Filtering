@@ -8,13 +8,13 @@ namespace csf {
 	* need to set cur_pos = pre_pos before using(in the constructor of Particle)
 	* 
 	* The residual of verlet integration is: O(t^4)
-	* The precision of timestamp: at least 0.01, and the timestamp_2 is: 0.0001
+	* The precision of timestep: at least 0.01, and the timestep_2 is: 0.0001
 	*/
 	void Particle::update_position_gravity() {
 
 		if (movable) {
 			Vector3d temp(cur_pos);
-			cur_pos = cur_pos + cur_pos - pre_pos + acceleration * timestamp_2; //update current position
+			cur_pos = cur_pos + cur_pos - pre_pos + acceleration * timestep_2; //update current position
 			pre_pos = temp;
 		}
 
@@ -45,20 +45,17 @@ namespace csf {
 				// adjust the position of the current particle and the neighbour
 				this->offset_position(correction_vector);
 				that->offset_position(-correction_vector); // update position of p: minus correction_vector
-			}
 			
-			else if (this->movable && !that->movable) {
+			}else if (this->movable && (!that->movable)) {
 				Vector3d correction_vector(height_diff *
-					(rigidness > 3 ? 1 : singleMove[rigidness]));
-
+						(rigidness > 3 ? 1 : singleMove[rigidness]));
 				this->offset_position(correction_vector);
-			}
 
-			else if (!this->movable && that->movable) {
+			}else if ((!this->movable) && that->movable) {
 				Vector3d correction_vector(height_diff *
-					(rigidness > 3 ? 1 : singleMove[rigidness]));
-
+						(rigidness > 3 ? 1 : singleMove[rigidness]));
 				that->offset_position(-correction_vector);
+
 			}
 
 		}

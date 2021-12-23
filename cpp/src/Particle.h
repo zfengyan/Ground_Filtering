@@ -39,7 +39,7 @@ namespace csf {
 		std::size_t col;
 
 		Vector3d acceleration; 
-		double timestamp_2; //pre-compute the squared timestamp: timestamp_2
+		double timestep_2; //pre-compute the squared timestep: timestep_2
 
 		/*
 		* neighbour particles of the current particle
@@ -59,11 +59,11 @@ namespace csf {
 			row(0),
 			col(0),
 			acceleration(Vector3d(0, 0, 0)),
-			timestamp_2(0),
+			timestep_2(0),
 			IntersectionHeightValue(LOWEST_HEIGHT_INF),
 			correspondLiDAR_index(0){}
 
-		Particle(const Vector3d& pos, const double& timestamp_squared):
+		Particle(const Vector3d& pos, const double& timestep_squared):
 			mass(1),
 			movable(true),
 			cur_pos(pos),
@@ -71,7 +71,7 @@ namespace csf {
 			row(0),
 			col(0),
 			acceleration(Vector3d(0, 0, 0)),
-			timestamp_2(timestamp_squared),
+			timestep_2(timestep_squared),
 			IntersectionHeightValue(LOWEST_HEIGHT_INF),
 			correspondLiDAR_index(0){}
 	public:
@@ -94,8 +94,8 @@ namespace csf {
 			acceleration.v[2] = z;
 		}
 
-		void set_timestamp_2(const double& time_squared) {
-			timestamp_2 = time_squared;
+		void set_timestep_2(const double& time_squared) {
+			timestep_2 = time_squared;
 		}
 
 		/*

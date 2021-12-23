@@ -1,4 +1,5 @@
 #include "Cloth.h"
+#include <omp.h>
 
 namespace csf {
 
@@ -8,18 +9,18 @@ namespace csf {
 		const int& rigidness_param, 
 		const double& row_step_param, 
 		const double& col_step_param, 
-		const double& timestamp_param, 
+		const double& timestep_param, 
 		const Vector3d& initial_param)
 		:	nrows(nrows_param), 
 			ncols(ncols_param),
 			rigidness(rigidness_param),
 			row_step(row_step_param),
 			col_step(col_step_param),
-			timestamp(timestamp_param),
+			timestep(timestep_param),
 			initial_position(initial_param)
 	{
 		particles.reserve(nrows * ncols); // vector for big size, use reserve() first
-		double timestamp_squared(timestamp * timestamp); // pre-compute the timestamp_2 then pass it to particle
+		double timestep_squared(timestep * timestep); // pre-compute the timestep_2 then pass it to particle
 
 
 		/*
@@ -35,7 +36,7 @@ namespace csf {
 							 initial_position.v[1] + j * col_step,
 							 initial_position.v[2]);
 
-				particles.emplace_back(Particle(pos, timestamp_squared));
+				particles.emplace_back(Particle(pos, timestep_squared));
 				particles[j + i * ncols].row = i;
 				particles[j + i * ncols].col = j;
 			}
@@ -87,6 +88,26 @@ namespace csf {
 			}
 		}
 
+	}
+
+
+	/*
+	* update the position of each particle in cloth:
+	* update position by gravity
+	* update position by "virtual spring"
+	* #pragma omp parallel for statement can be used in position by gravity
+	* because they are independent
+	* yet it can not be used in position by "virtual spring"
+	* because they are not totally independent
+	*/
+	void Cloth::update_cloth_position(){
+
+		// update particle positions by gravity
+		for (std::size_t i = 0; i < particles.size(); ++i) {
+			particles[i].update_position_gravity();
+		}
+
+	
 	}
 
 }

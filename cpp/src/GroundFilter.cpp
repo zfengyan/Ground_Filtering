@@ -332,17 +332,49 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
     /*
     * @brief: Initialize the cloth
-    */
+    * output the number of neighbours
+    
     std::size_t NROWS((std::size_t)(ceil(pmax.x - pmin.x)+1)), NCOLS((std::size_t)(ceil(pmax.y - pmin.y)+1));
     std::cout << NROWS << " " << NCOLS << '\n';
-    csf::Cloth c1(3, 2, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
-    for (std::size_t i = 0; i < 3; ++i) {
-        for (std::size_t j = 0; j < 2; ++j) {
-            std::cout << c1.particles[j + i * 2].neighbours.size() << ' ';
+    csf::Cloth c1(4, 4, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
+    for (std::size_t i = 0; i < 4; ++i) {
+        for (std::size_t j = 0; j < 4; ++j) {
+            std::cout << c1.particles[j + i * 4].neighbours.size() << ' ';
         }
         std::cout << '\n';
     }
-    
+    */
+
+
+    std::cout << "before update: " << '\n';
+    csf::Cloth c1(4, 4, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
+    for (std::size_t i = 0; i < 4; ++i) {
+        for (std::size_t j = 0; j < 4; ++j) {
+            std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
+        }
+        std::cout << '\n';
+    }
+
+    std::cout << '\n';
+
+    // add gravity
+    c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
+
+    int count_time(0);
+    while (count_time != 169) {
+        c1.update_cloth_position();
+        ++count_time;
+    } // 1/2*g*t^2 = 14.06
+
+    std::cout << "after update: " << '\n';
+    for (std::size_t i = 0; i < 4; ++i) {
+        for (std::size_t j = 0; j < 4; ++j) {
+            std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
+        }
+        std::cout << '\n';
+    }
+
+
     //csf::Cloth c1(NROWS, NCOLS, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
     //std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
     //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);

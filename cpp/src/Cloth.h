@@ -18,7 +18,7 @@ namespace csf {
 		int rigidness; //rigidness of cloth(rigidness: 0,1,2,3 ... )
 		double row_step; // depends on the row size of pointcloud and the resolution(user defined)
 		double col_step; // depends on the column size of pointcloud and the resolution(user defined)
-		double timestamp; // each timestamp stands for each frame
+		double timestep; // each timestep stands for each frame
 		
 		Vector3d initial_position; // the initial position of the first particle of cloth
 
@@ -33,7 +33,7 @@ namespace csf {
 			const int& rigidness_param, 
 			const double& row_step_param,
 			const double& col_step_param, 
-			const double& timestamp_param,
+			const double& timestep_param,
 			const Vector3d& initial_param); 
 
 		/*
@@ -58,6 +58,26 @@ namespace csf {
 		std::size_t get_cloth_size(){
 			return nrows * ncols;
 		}
+
+
+		/*
+		* @brief: add force for each particle
+		* @param: Vector3d force
+		*/
+		void addforce_for_particles(const Vector3d& f) {
+			for (std::size_t i = 0; i < particles.size(); ++i) {
+				particles[i].add_force(f);
+			}
+		}
+
+
+		/*
+		* @brief:
+		* IMPORTANT cloth_timestep
+		* update the status of each particle in the cloth
+		* gravity and "virtual spring"
+		*/
+		void update_cloth_position();
 
 	};
 
