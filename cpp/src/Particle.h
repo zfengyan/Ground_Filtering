@@ -47,7 +47,7 @@ namespace csf {
 		*/
 		std::vector<Particle*> neighbours; 
 
-		double IntersectionHeightValue; // the height(z value) of the CP(corresponding point in LiDAR point)
+		double Intersect_Height_Value; // the height(z value) of the CP(corresponding point in LiDAR point)
 		std::size_t correspondLiDAR_index; // the index of corresponding LiDAR point
 
 	public:
@@ -60,7 +60,7 @@ namespace csf {
 			col(0),
 			acceleration(Vector3d(0, 0, 0)),
 			timestep_2(0),
-			IntersectionHeightValue(LOWEST_HEIGHT_INF),
+			Intersect_Height_Value(LOWEST_HEIGHT_INF),
 			correspondLiDAR_index(0){}
 
 		Particle(const Vector3d& pos, const double& timestep_squared):
@@ -72,7 +72,7 @@ namespace csf {
 			col(0),
 			acceleration(Vector3d(0, 0, 0)),
 			timestep_2(timestep_squared),
-			IntersectionHeightValue(LOWEST_HEIGHT_INF),
+			Intersect_Height_Value(LOWEST_HEIGHT_INF),
 			correspondLiDAR_index(0){}
 	public:
 

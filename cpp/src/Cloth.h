@@ -74,11 +74,28 @@ namespace csf {
 
 		/*
 		* @brief:
-		* IMPORTANT cloth_timestep
-		* update the status of each particle in the cloth
-		* gravity and "virtual spring"
+		* update the status(position) of each particle in the cloth
+		* gravity
 		*/
-		void update_cloth_position();
+		void update_cloth_gravity();
+
+
+		/*
+		* @brief: determine whether the particle hits the terrain
+		* compare the Intersection_Height_Value(the height value of corresponding (reversed)LiDAR point)
+		* if the current_Height_Value(z coordinate) < Intersect_Height_Value
+		* set the z coordinate = Intersect_Height_Value
+		* make the particle unmovable
+		*/
+		void terrain_intersection_check();
+
+
+		/*
+		* @brief:
+		* update the status(position) of each particle in the cloth
+		* "virtual spring" -- need to execute the intersection_terrain_check() first
+		*/
+		void update_cloth_spring();
 
 
 		/*

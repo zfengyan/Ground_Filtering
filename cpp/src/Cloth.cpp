@@ -98,9 +98,9 @@ namespace csf {
 	* #pragma omp parallel for statement can be used in position by gravity
 	* because they are independent
 	* yet it can not be used in position by "virtual spring"
-	* because they are not totally independent
+	* because they are not totally independent(?)
 	*/
-	void Cloth::update_cloth_position(){
+	void Cloth::update_cloth_gravity(){
 
 		// update particle positions by gravity
 		// #pragma omp parallel for
@@ -108,11 +108,30 @@ namespace csf {
 			particles[i].update_position_gravity();
 		}
 
+	}
+
+	
+	void Cloth::terrain_intersection_check(){
+
+		for (std::size_t i = 0; i < particles.size(); ++i) {
+			if (particles[i].cur_pos.v[2] <= particles[i].Intersect_Height_Value) {
+
+				// set the current height value = corresponding Intersect_Height_Value
+				particles[i].cur_pos.v[2] = particles[i].Intersect_Height_Value;
+				
+				// set the current particle unmovable
+				particles[i].set_unmovable();
+			}
+		}
+	}
+
+
+	void Cloth::update_cloth_spring(){
+
 		// update particle positions by virtual spring
 		for (std::size_t i = 0; i < particles.size(); ++i) {
 			particles[i].update_position_spring(rigidness);
 		}
-	
 	}
 
 

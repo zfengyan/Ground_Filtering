@@ -294,6 +294,26 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     }
     
 
+    std::cout << "before update: " << '\n';
+    csf::Cloth c1(4, 4, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
+    for (std::size_t i = 0; i < 4; ++i) {
+        for (std::size_t j = 0; j < 4; ++j) {
+            std::cout << c1.particles[j + i * 4].movable << ' ';
+        }
+        std::cout << '\n';
+    }
+
+    std::cout << '\n';
+    std::cout << "after update: " << '\n';
+    c1.terrain_intersection_check(); 
+    for (std::size_t i = 0; i < 4; ++i) {
+        for (std::size_t j = 0; j < 4; ++j) {
+            std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
+        }
+        std::cout << '\n';
+    }
+
+
 
     /*
     * update_position_gravity
@@ -366,7 +386,7 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
     //int count_time(0);
     //while (count_time != 3) {
-    //    c1.update_cloth_position();
+    //    c1.update_cloth_gravity();
     //    ++count_time;
     //} // 1/2*g*t^2 = 14.06
 
