@@ -219,6 +219,33 @@ namespace csf {
         laswriter->close();
         delete laswriter;
     }
+
+
+    /*
+    * @brief: 
+    * Projecting all the LiDAR points and grid particles to a horizontal plane 
+    * and finding the CP(corresponding point) for each grid particle in this plane. 
+    * then recording the Intersection Height Value.
+    * @param: pointcloud, cloth
+    */
+    void find_height_forparticle(const std::vector<Point>& pointcloud, Cloth& cloth) {
+
+        typedef CGAL::Search_traits_3<Kernel> TreeTraits;
+        typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
+        typedef Neighbor_search::Tree Tree;
+
+        Tree tree(pointcloud.begin(), pointcloud.end());
+        const unsigned int N = 1;
+        Point query_point(pointcloud[0][0], pointcloud[0][1], pointcloud[0][2]);
+        Neighbor_search search_result(tree, query_point, N);
+
+        for (auto res : search_result) {
+            Point neighbour_point(res.first);
+            double distance(res.second);
+            std::cout << "neighbouring distance: " << distance << '\n';
+        }
+    }
+
 }
 
 
@@ -239,9 +266,9 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
         - output_las:     path to output .las file that contains your ground classification
     */
 
-    typedef CGAL::Search_traits_3<Kernel> TreeTraits;
+    /*typedef CGAL::Search_traits_3<Kernel> TreeTraits;
     typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
-    typedef Neighbor_search::Tree Tree;
+    typedef Neighbor_search::Tree Tree;*/
 
     // double resolution = j["resolution"];
     // double epsilon_zmax = j["epsilon_zmax"];
@@ -278,40 +305,9 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
     /*
     * @brief: find bounding box
-    */
+    * 
     csf::MyPoint pmin, pmax;
-    bounding_box(pointcloud, pmin, pmax);
-
-    Tree tree(pointcloud.begin(), pointcloud.end());  
-    const std::size_t N = 2;
-    Point query_point(pointcloud[0][0], pointcloud[0][1], pointcloud[0][2]);
-    Neighbor_search search_result(tree, query_point, N);
-  
-    for(auto res : search_result) {
-        Point neighbour_point(res.first);
-        double distance(res.second);
-        std::cout << "neighbouring distance: " << distance << '\n';
-    }
-    
-
-    std::cout << "before update: " << '\n';
-    csf::Cloth c1(4, 4, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
-    for (std::size_t i = 0; i < 4; ++i) {
-        for (std::size_t j = 0; j < 4; ++j) {
-            std::cout << c1.particles[j + i * 4].movable << ' ';
-        }
-        std::cout << '\n';
-    }
-
-    std::cout << '\n';
-    std::cout << "after update: " << '\n';
-    c1.terrain_intersection_check(); 
-    for (std::size_t i = 0; i < 4; ++i) {
-        for (std::size_t j = 0; j < 4; ++j) {
-            std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
-        }
-        std::cout << '\n';
-    }
+    bounding_box(pointcloud, pmin, pmax);*/
 
 
 
@@ -404,9 +400,16 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     //std::cout << c1.calculate_max_diff() << '\n';
 
 
-    //csf::Cloth c1(NROWS, NCOLS, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
+    csf::MyPoint pmin, pmax;
+    bounding_box(pointcloud, pmin, pmax);
+    std::size_t NROWS((std::size_t)(ceil(pmax.x - pmin.x) + 1)), NCOLS((std::size_t)(ceil(pmax.y - pmin.y) + 1));
+    csf::Cloth c1(NROWS, NCOLS, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
+    
     //std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
     //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
+
+
+    find_height_forparticle(pointcloud, c1);
 
 
     //-- TIP

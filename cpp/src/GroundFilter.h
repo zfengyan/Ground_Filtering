@@ -30,4 +30,5 @@ void write_lasfile(const std::string filename, const std::vector<Point>& pointcl
 void groundfilter_tin(const std::vector<Point>& pointcloud, const json& jparams);
 void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams);
 
+
 #endif
