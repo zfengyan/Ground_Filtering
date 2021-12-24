@@ -275,15 +275,24 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     //-- construct and query kd-tree:
     // https://doc.cgal.org/latest/Spatial_searching/index.html#title5
     //
-    /* Tree tree(pointcloud.begin(), pointcloud.end());  
-    const unsigned int N = 1;
-    Point query_point = Point(0,0,0);
+
+    /*
+    * @brief: find bounding box
+    */
+    csf::MyPoint pmin, pmax;
+    bounding_box(pointcloud, pmin, pmax);
+
+    Tree tree(pointcloud.begin(), pointcloud.end());  
+    const std::size_t N = 2;
+    Point query_point(pointcloud[0][0], pointcloud[0][1], pointcloud[0][2]);
     Neighbor_search search_result(tree, query_point, N);
   
     for(auto res : search_result) {
-        Point neighbour_point = res.first;
-        double distance = res.second; //value of double too big ?
-    }*/
+        Point neighbour_point(res.first);
+        double distance(res.second);
+        std::cout << "neighbouring distance: " << distance << '\n';
+    }
+    
 
 
     /*
@@ -324,12 +333,7 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     p2.cur_pos.print_self();*/
 
 
-    /*
-    * @brief: find bounding box
-    */
-    csf::MyPoint pmin, pmax;
-    bounding_box(pointcloud, pmin, pmax);
-
+    
     /*
     * @brief: Initialize the cloth
     * output the number of neighbours
@@ -346,38 +350,39 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     */
 
 
-    std::cout << "before update: " << '\n';
-    csf::Cloth c1(4, 4, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
-    for (std::size_t i = 0; i < 4; ++i) {
-        for (std::size_t j = 0; j < 4; ++j) {
-            std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
-        }
-        std::cout << '\n';
-    }
+    //std::cout << "before update: " << '\n';
+    //csf::Cloth c1(4, 4, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
+    //for (std::size_t i = 0; i < 4; ++i) {
+    //    for (std::size_t j = 0; j < 4; ++j) {
+    //        std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
+    //    }
+    //    std::cout << '\n';
+    //}
 
-    std::cout << '\n';
+    //std::cout << '\n';
 
-    // add gravity
-    c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
+    //// add gravity
+    //c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
 
-    int count_time(0);
-    while (count_time != 3) {
-        c1.update_cloth_position();
-        ++count_time;
-    } // 1/2*g*t^2 = 14.06
+    //int count_time(0);
+    //while (count_time != 3) {
+    //    c1.update_cloth_position();
+    //    ++count_time;
+    //} // 1/2*g*t^2 = 14.06
 
-    std::cout << "after update: " << '\n';
-    for (std::size_t i = 0; i < 4; ++i) {
-        for (std::size_t j = 0; j < 4; ++j) {
-            std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
-        }
-        std::cout << '\n';
-    }
+    //std::cout << "after update: " << '\n';
+    //for (std::size_t i = 0; i < 4; ++i) {
+    //    for (std::size_t j = 0; j < 4; ++j) {
+    //        std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
+    //    }
+    //    std::cout << '\n';
+    //}
 
-    std::cout << '\n';
-    std::cout << "calculate max height difference: " << '\n';
+    //std::cout << '\n';
+    //std::cout << "calculate max height difference: " << '\n';
 
-    std::cout << c1.calculate_max_diff() << '\n';
+    //std::cout << c1.calculate_max_diff() << '\n';
+
 
     //csf::Cloth c1(NROWS, NCOLS, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
     //std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
