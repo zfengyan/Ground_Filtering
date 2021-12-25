@@ -21,6 +21,8 @@
 // -- CGAL kd-tree
 #include <CGAL/Orthogonal_k_neighbor_search.h>
 #include <CGAL/Search_traits_3.h>
+#include <CGAL/Search_traits_adapter.h>
+#include <boost/iterator/zip_iterator.hpp>
 
 // -- csf Dependencies
 #include "Cloth.h"
@@ -228,21 +230,46 @@ namespace csf {
     * then recording the Intersection Height Value.
     * @param: pointcloud, cloth
     */
-    void find_height_forparticle(const std::vector<Point>& pointcloud, Cloth& cloth) {
+    void find_intersection_height(const std::vector<Point>& pointcloud, Cloth& cloth) {
 
-        typedef CGAL::Search_traits_3<Kernel> TreeTraits;
-        typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
+        typedef boost::tuple<Point, std::size_t> Point_and_int;
+        typedef CGAL::Search_traits_3<Kernel> Traits_base;
+        typedef CGAL::Search_traits_adapter<Point_and_int,
+            CGAL::Nth_of_tuple_property_map<0, Point_and_int>,
+            Traits_base> Traits;
+        typedef CGAL::Orthogonal_k_neighbor_search<Traits> Neighbor_search;
         typedef Neighbor_search::Tree Tree;
 
-        Tree tree(pointcloud.begin(), pointcloud.end());
+        /*typedef CGAL::Search_traits_3<Kernel> TreeTraits;
+        typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
+        typedef Neighbor_search::Tree Tree;*/
+
+        
+
+        std::vector<std::size_t>indices;
+        indices.reserve(pointcloud.size());
+        for (std::size_t i = 0; i < pointcloud.size(); ++i) {
+            indices.emplace_back(i);
+        }
+
+        //Tree tree(pointcloud.begin(), pointcloud.end());
+        Tree tree(boost::make_zip_iterator(boost::make_tuple(pointcloud.begin(), indices.begin())),
+                  boost::make_zip_iterator(boost::make_tuple(pointcloud.end(), indices.end())));
+
         const unsigned int N = 1;
+
         Point query_point(pointcloud[0][0], pointcloud[0][1], pointcloud[0][2]);
         Neighbor_search search_result(tree, query_point, N);
 
-        for (auto res : search_result) {
-            Point neighbour_point(res.first);
-            double distance(res.second);
-            std::cout << "neighbouring distance: " << distance << '\n';
+        //for (auto res : search_result) {
+        //    /*Point neighbour_point(res.first);
+        //    double distance(res.second);
+        //    std::cout << "neighbouring distance: " << res.first<< '\n';*/
+        //}
+
+        for (auto it = search_result.begin(); it != search_result.end(); ++it) {
+            std::cout << " d(q, nearest neighbor)=  "
+                << boost::get<0>(it->first) << " " << boost::get<1>(it->first) << std::endl;
         }
     }
 
@@ -409,7 +436,7 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
 
 
-    find_height_forparticle(pointcloud, c1);
+    find_intersection_height(pointcloud, c1);
 
 
     //-- TIP
