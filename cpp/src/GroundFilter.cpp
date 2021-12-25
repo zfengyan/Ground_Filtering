@@ -212,7 +212,8 @@ namespace csf {
 
             laspoint.set_x(p.cur_pos.v[0]);
             laspoint.set_y(p.cur_pos.v[1]);
-            laspoint.set_z(p.cur_pos.v[2]);
+            //laspoint.set_z(p.cur_pos.v[2]);
+            laspoint.set_z(p.Intersect_Height_Value);
 
             laspoint.set_classification(label);
 
@@ -272,9 +273,16 @@ namespace csf {
                   boost::make_zip_iterator(boost::make_tuple(pointcloud_proj.end(), indices.end())));
 
         const unsigned int N = 1;
+        
+        for (std::size_t i = 0; i < cloth.particles.size(); ++i) {
 
-        Point_2 query_point(pointcloud_proj[0][0], pointcloud_proj[0][1]);
-        Neighbor_search search_result(tree, query_point, N);
+            // query_point: projection of particle
+            Point_2 query_point(cloth.particles[i].cur_pos.v[0], cloth.particles[i].cur_pos.v[1]); //x, y
+            Neighbor_search search_result(tree, query_point, N);
+            auto res(search_result.begin()); // N=1, only one neighbour
+            std::size_t indice(boost::get<1>(res->first)); // indice of the result point
+            cloth.particles[i].Intersect_Height_Value = pointcloud[indice][2]; // set the intersection height value
+        }
 
         //for (auto res : search_result) {
         //    /*Point neighbour_point(res.first);
@@ -282,10 +290,10 @@ namespace csf {
         //    std::cout << "neighbouring distance: " << res.first<< '\n';*/
         //}
 
-        for (auto it = search_result.begin(); it != search_result.end(); ++it) {
+        /*for (auto it = search_result.begin(); it != search_result.end(); ++it) {
             std::cout << " d(q, nearest neighbor)=  "
                 << boost::get<0>(it->first) << " " << boost::get<1>(it->first) << std::endl;
-        }
+        }*/
     }
 
 }
@@ -446,12 +454,11 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     bounding_box(pointcloud, pmin, pmax);
     std::size_t NROWS((std::size_t)(ceil(pmax.x - pmin.x) + 1)), NCOLS((std::size_t)(ceil(pmax.y - pmin.y) + 1));
     csf::Cloth c1(NROWS, NCOLS, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
-    
-    //std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
-    //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
-
 
     find_intersection_height(pointcloud, c1);
+    
+    std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
+    csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
 
 
     //-- TIP
