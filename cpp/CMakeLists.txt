@@ -1,6 +1,5 @@
 ﻿cmake_minimum_required(VERSION 3.17)
 project(hw03)
-
 # get point cloud data
 # if(NOT EXISTS ${PROJECT_SOURCE_DIR}/data/ahn3.ply)
 #   message(STATUS "Downloading ahn3.ply file...")
@@ -15,6 +14,7 @@ include_directories(${PROJECT_SOURCE_DIR}/external/nlohmann-json)
 find_package(CGAL QUIET COMPONENTS Core REQUIRED)
 # laslib
 add_subdirectory(external/LAStools)
+# OneTBB
 
 add_definitions(
   -DJSON_PARAMS_PATH=\"${PROJECT_SOURCE_DIR}/../data/params.json\"

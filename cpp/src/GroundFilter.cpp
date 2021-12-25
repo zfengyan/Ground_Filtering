@@ -24,6 +24,9 @@
 #include <CGAL/Search_traits_adapter.h>
 #include <boost/iterator/zip_iterator.hpp>
 
+#include <CGAL/Simple_cartesian.h> 
+#include <CGAL/Search_traits_2.h>
+
 // -- csf Dependencies
 #include "Cloth.h"
 #include <cmath>
@@ -232,33 +235,45 @@ namespace csf {
     */
     void find_intersection_height(const std::vector<Point>& pointcloud, Cloth& cloth) {
 
-        typedef boost::tuple<Point, std::size_t> Point_and_int;
-        typedef CGAL::Search_traits_3<Kernel> Traits_base;
+        typedef CGAL::Simple_cartesian<double> K;
+        typedef K::Point_2 Point_2;
+
+        typedef boost::tuple<Point_2, std::size_t> Point_and_int;
+        typedef CGAL::Search_traits_2<K> Traits_base; //typedef CGAL::Search_traits_3<Kernel> Traits_base;     
         typedef CGAL::Search_traits_adapter<Point_and_int,
             CGAL::Nth_of_tuple_property_map<0, Point_and_int>,
             Traits_base> Traits;
         typedef CGAL::Orthogonal_k_neighbor_search<Traits> Neighbor_search;
         typedef Neighbor_search::Tree Tree;
 
+
         /*typedef CGAL::Search_traits_3<Kernel> TreeTraits;
         typedef CGAL::Orthogonal_k_neighbor_search<TreeTraits> Neighbor_search;
         typedef Neighbor_search::Tree Tree;*/
 
-        
+        // project the pointcloud to a plane: Point_2 type
+        std::vector<Point_2> pointcloud_proj;
+        pointcloud_proj.reserve(pointcloud.size());
+        for (auto point : pointcloud) {
+            pointcloud_proj.emplace_back(Point_2(point[0], point[1]));
+        }
+       
 
+        // set the indices vector
         std::vector<std::size_t>indices;
         indices.reserve(pointcloud.size());
         for (std::size_t i = 0; i < pointcloud.size(); ++i) {
             indices.emplace_back(i);
         }
 
+
         //Tree tree(pointcloud.begin(), pointcloud.end());
-        Tree tree(boost::make_zip_iterator(boost::make_tuple(pointcloud.begin(), indices.begin())),
-                  boost::make_zip_iterator(boost::make_tuple(pointcloud.end(), indices.end())));
+        Tree tree(boost::make_zip_iterator(boost::make_tuple(pointcloud_proj.begin(), indices.begin())),
+                  boost::make_zip_iterator(boost::make_tuple(pointcloud_proj.end(), indices.end())));
 
         const unsigned int N = 1;
 
-        Point query_point(pointcloud[0][0], pointcloud[0][1], pointcloud[0][2]);
+        Point_2 query_point(pointcloud_proj[0][0], pointcloud_proj[0][1]);
         Neighbor_search search_result(tree, query_point, N);
 
         //for (auto res : search_result) {
