@@ -462,24 +462,33 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     csf::MyPoint pmin, pmax;
     bounding_box(inverse_pointcloud, pmin, pmax);
     std::size_t NROWS((std::size_t)(ceil(pmax.x - pmin.x) + 1)), NCOLS((std::size_t)(ceil(pmax.y - pmin.y) + 1));
-    csf::Cloth c1(NROWS, NCOLS, 1, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
+    csf::Cloth c1(NROWS, NCOLS, 1, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z+2));
 
     find_intersection_height(inverse_pointcloud, c1);
     //add gravity
     c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
+
     //update position(200 iterations, with "virtual spring")
-    for (std::size_t i = 0; i < 200; ++i) {
+
+    for (std::size_t i = 0; i < 150; ++i) {
         c1.update_cloth_gravity();
         //collision check
+        c1.update_cloth_spring();
         c1.terrain_intersection_check();
+        
         //c1.update_cloth_spring();
+
+
+        //if (c1.calculate_max_diff() != 0 && c1.calculate_max_diff() < 0.0001)break;
+        
     }
-    
-    
-    //std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
-    //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
-    std::vector<int> class_labels(inverse_pointcloud.size()); // Initialized with 0
-    csf::write_lasfile_tmp(jparams["output_las"], inverse_pointcloud, class_labels);
+
+
+    //std::cout << c1.calculate_max_diff();
+    std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
+    csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
+    //std::vector<int> class_labels(inverse_pointcloud.size()); // Initialized with 0
+    //csf::write_lasfile_tmp(jparams["output_las"], inverse_pointcloud, class_labels);
 
 
     //-- TIP

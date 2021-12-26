@@ -77,7 +77,7 @@ namespace csf {
 		* 4,5,6,8,10,11,13 ... (any more values?)
 		* 16(max) - - 8 direct springs and 8 second springs
 		*/
-		for (std::size_t i = 0; i < nrows; ++i) {
+		/*for (std::size_t i = 0; i < nrows; ++i) {
 			for (std::size_t j = 0; j < ncols; ++j) {
 				if (j < ncols - 2)set_virtual_spring(get_particle(i, j), get_particle(i, j + 2));
 				if (i < nrows - 2)set_virtual_spring(get_particle(i, j), get_particle(i + 2, j));
@@ -86,7 +86,7 @@ namespace csf {
 					set_virtual_spring(get_particle(i, j + 2), get_particle(i + 2, j));
 				}
 			}
-		}
+		}*/
 
 	}
 
