@@ -327,25 +327,6 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
     // //-- print the first 5 points in the pointcloud, which are CGAL Point_3
     // //-- https://doc.cgal.org/latest/Kernel_23/classCGAL_1_1Point__3.html
-    //int i = 0;
-    //for (auto p : pointcloud) {
-    //     //std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z()  << ")" << '\n';
-    //     std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z() << ")" << '\n';
-    //     ++i;
-    //     if (i == 5) 
-    //         break;
-    //}
-
-    /*
-    std::cout << pointcloud.size() << '\n';
-    csf::MyPoint p1; // pmin
-    csf::MyPoint p2; // pmax
-    csf::bounding_box(pointcloud, p1, p2);
-    std::cout << "smallest x: " << p1.x << " smallest y: " << p1.y << " smallest z: " << p1.z << '\n';
-    std::cout << "biggest x: " << p2.x << " biggest y: " << p2.y << " biggest z: " << p2.z << '\n';
-
-    csf::Vector3d v1(pointcloud[0], pointcloud[100]);
-    std::cout << v1.vector_length() << '\n';*/
 
 
     //-- TIP
@@ -354,101 +335,8 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     //
 
     /*
-    * @brief: find bounding box
-    * 
-    csf::MyPoint pmin, pmax;
-    bounding_box(pointcloud, pmin, pmax);*/
-
-
-
-    /*
-    * update_position_gravity
-    * using verlet integration
-    * 
-    csf::Particle particle1(csf::Vector3d(0,0,0),0.0001);
-    std::cout << particle1.mass << '\n';
-    particle1.set_acceleration(0, 0, -10);
-
-    particle1.cur_pos.print_self();
-    for (int i = 0; i < 5; ++i) {
-        particle1.update_position_gravity();
-        particle1.cur_pos.print_self();
-    }*/
-
-    /*
-    * update_position_spring
-    * parameter: rigidness
-    csf::Particle p1(csf::Vector3d(0, 0, 20), 0.0001);
-    csf::Particle p2(csf::Vector3d(0, 0, 0), 0.0001);
-    p2.neighbours.emplace_back(&p1);
-    p1.neighbours.emplace_back(&p2);
-    int rigidness(3); // rigidness: 0,1,2,3
-    //p1.set_unmovable();
-
-    std::cout << "p1 cur_pos: " << '\n';
-    p1.cur_pos.print_self();
-    std::cout << "p2 cur_pos: " << '\n';
-    p2.cur_pos.print_self();
-
-    std::cout << '\n';
-    p1.update_position_spring(rigidness);
-
-    std::cout << "p1 after spring:" << '\n';
-    p1.cur_pos.print_self();
-    std::cout << "p2 after spring:" << '\n';
-    p2.cur_pos.print_self();*/
-
-
-    
-    /*
-    * @brief: Initialize the cloth
-    * output the number of neighbours
-    
-    std::size_t NROWS((std::size_t)(ceil(pmax.x - pmin.x)+1)), NCOLS((std::size_t)(ceil(pmax.y - pmin.y)+1));
-    std::cout << NROWS << " " << NCOLS << '\n';
-    csf::Cloth c1(4, 4, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
-    for (std::size_t i = 0; i < 4; ++i) {
-        for (std::size_t j = 0; j < 4; ++j) {
-            std::cout << c1.particles[j + i * 4].neighbours.size() << ' ';
-        }
-        std::cout << '\n';
-    }
+    * Inverse the original pointcloud and output
     */
-
-
-    //std::cout << "before update: " << '\n';
-    //csf::Cloth c1(4, 4, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
-    //for (std::size_t i = 0; i < 4; ++i) {
-    //    for (std::size_t j = 0; j < 4; ++j) {
-    //        std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
-    //    }
-    //    std::cout << '\n';
-    //}
-
-    //std::cout << '\n';
-
-    //// add gravity
-    //c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
-
-    //int count_time(0);
-    //while (count_time != 3) {
-    //    c1.update_cloth_gravity();
-    //    ++count_time;
-    //} // 1/2*g*t^2 = 14.06
-
-    //std::cout << "after update: " << '\n';
-    //for (std::size_t i = 0; i < 4; ++i) {
-    //    for (std::size_t j = 0; j < 4; ++j) {
-    //        std::cout << c1.particles[j + i * 4].cur_pos.v[2] << ' ';
-    //    }
-    //    std::cout << '\n';
-    //}
-
-    //std::cout << '\n';
-    //std::cout << "calculate max height difference: " << '\n';
-
-    //std::cout << c1.calculate_max_diff() << '\n';
-
     std::vector<Point> inverse_pointcloud;
     inverse_pointcloud.reserve(pointcloud.size());
     std::size_t i = 0;
@@ -472,23 +360,21 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     //add gravity
     c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
 
-    //update position(200 iterations, with "virtual spring")
-
     for (std::size_t i = 0; i < 170; ++i) {
         c1.update_cloth_gravity();
-        //collision check
         c1.update_cloth_spring();
         c1.terrain_intersection_check();
         
-        //c1.update_cloth_spring();
         //if (c1.calculate_max_diff() != 0 && c1.calculate_max_diff() < 0.0001)break;
         
     }
 
 
     //std::cout << c1.calculate_max_diff();
+
     std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
     csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
+
     //std::vector<int> class_labels(inverse_pointcloud.size()); // Initialized with 0
     //csf::write_lasfile_tmp(jparams["output_las"], inverse_pointcloud, class_labels);
 
@@ -499,23 +385,6 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     //write_lasfile(jparams["output_las"], pointcloud, class_labels);
 
 
-    /*
-    * Inverse the original pointcloud and output
-    *
-    std::vector<csf::MyPoint> inverse_test;
-    inverse_test.reserve(pointcloud.size());
-    std::size_t i = 0;
-    for (auto p : pointcloud) {
-        //std::cout << "(" << p.x() << ", " << p.y() << ", " << p.z()  << ")" << '\n';
-        inverse_test.emplace_back(csf::MyPoint(p[0], p[1], -p[2]));
-        ++i;
-        if (i == pointcloud.size())
-            break;
-    }
-    //output inversed pointcloud
-    std::vector<int> class_labels(inverse_test.size()); // Initialized with 0
-    csf::write_lasfile_tmp(jparams["output_las"], inverse_test, class_labels);
-    */
 }
 
 
