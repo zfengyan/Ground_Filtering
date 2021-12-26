@@ -116,7 +116,7 @@ namespace csf {
     }
 
 
-    void write_lasfile_tmp(const std::string filename, const std::vector<MyPoint>& pointcloud, const std::vector<int>& class_labels) {
+    void write_lasfile_tmp(const std::string filename, const std::vector<Point>& pointcloud, const std::vector<int>& class_labels) {
         /*
         Function to write a new LAS file with point labels (for the LAS classification field)
 
@@ -154,12 +154,12 @@ namespace csf {
         }
 
         for (size_t i = 0; i < pointcloud.size(); ++i) {
-            const MyPoint& p = pointcloud[i];
+            const Point& p = pointcloud[i];
             const int& label = class_labels[i];
 
-            laspoint.set_x(p.x);
-            laspoint.set_y(p.y);
-            laspoint.set_z(p.z);
+            laspoint.set_x(p[0]);
+            laspoint.set_y(p[1]);
+            laspoint.set_z(p[2]);
 
             laspoint.set_classification(label);
 
@@ -449,26 +449,37 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
     //std::cout << c1.calculate_max_diff() << '\n';
 
+    std::vector<Point> inverse_pointcloud;
+    inverse_pointcloud.reserve(pointcloud.size());
+    std::size_t i = 0;
+    for (auto p : pointcloud) {
+        inverse_pointcloud.emplace_back(Point(p[0], p[1], -p[2]));
+        ++i;
+        if (i == pointcloud.size())
+            break;
+    }
 
     csf::MyPoint pmin, pmax;
-    bounding_box(pointcloud, pmin, pmax);
+    bounding_box(inverse_pointcloud, pmin, pmax);
     std::size_t NROWS((std::size_t)(ceil(pmax.x - pmin.x) + 1)), NCOLS((std::size_t)(ceil(pmax.y - pmin.y) + 1));
-    csf::Cloth c1(NROWS, NCOLS, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
+    csf::Cloth c1(NROWS, NCOLS, 1, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
 
-    find_intersection_height(pointcloud, c1);
+    find_intersection_height(inverse_pointcloud, c1);
     //add gravity
     c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
-    //update position(200 iterations, without "virtual spring")
+    //update position(200 iterations, with "virtual spring")
     for (std::size_t i = 0; i < 200; ++i) {
         c1.update_cloth_gravity();
         //collision check
         c1.terrain_intersection_check();
+        //c1.update_cloth_spring();
     }
     
     
-    
-    std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
-    csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
+    //std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
+    //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
+    std::vector<int> class_labels(inverse_pointcloud.size()); // Initialized with 0
+    csf::write_lasfile_tmp(jparams["output_las"], inverse_pointcloud, class_labels);
 
 
     //-- TIP
