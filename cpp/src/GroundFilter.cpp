@@ -461,8 +461,12 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
     csf::MyPoint pmin, pmax;
     bounding_box(inverse_pointcloud, pmin, pmax);
-    std::size_t NROWS((std::size_t)(ceil(pmax.x - pmin.x) + 1)), NCOLS((std::size_t)(ceil(pmax.y - pmin.y) + 1));
-    csf::Cloth c1(NROWS, NCOLS, 1, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z+2));
+    double resolution(0.1);
+    std::size_t NROWS((std::size_t)(ceil((pmax.x - pmin.x) / resolution) + 1));
+    std::size_t NCOLS((std::size_t)(ceil((pmax.y - pmin.y) / resolution) + 1));
+    csf::Cloth c1(NROWS, NCOLS, 1, resolution, resolution, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z+2));
+
+    std::cout << "size: " << c1.particles.size() << '\n';
 
     find_intersection_height(inverse_pointcloud, c1);
     //add gravity
