@@ -212,8 +212,8 @@ namespace csf {
 
             laspoint.set_x(p.cur_pos.v[0]);
             laspoint.set_y(p.cur_pos.v[1]);
-            //laspoint.set_z(p.cur_pos.v[2]);
-            laspoint.set_z(p.Intersect_Height_Value);
+            laspoint.set_z(p.cur_pos.v[2]);
+            //laspoint.set_z(p.Intersect_Height_Value);
 
             laspoint.set_classification(label);
 
@@ -456,6 +456,16 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     csf::Cloth c1(NROWS, NCOLS, 3, 1, 1, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
 
     find_intersection_height(pointcloud, c1);
+    //add gravity
+    c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
+    //update position(200 iterations, without "virtual spring")
+    for (std::size_t i = 0; i < 200; ++i) {
+        c1.update_cloth_gravity();
+        //collision check
+        c1.terrain_intersection_check();
+    }
+    
+    
     
     std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
     csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
