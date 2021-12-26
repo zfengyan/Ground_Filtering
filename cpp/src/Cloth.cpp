@@ -76,6 +76,7 @@ namespace csf {
 		* 3(min) - - a 2*2 grid
 		* 4,5,6,8,10,11,13 ... (any more values?)
 		* 16(max) - - 8 direct springs and 8 second springs
+		* secondary neighbours will make the cloth "tighter"
 		*/
 		/*for (std::size_t i = 0; i < nrows; ++i) {
 			for (std::size_t j = 0; j < ncols; ++j) {
