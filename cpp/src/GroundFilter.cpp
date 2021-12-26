@@ -461,10 +461,10 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
     csf::MyPoint pmin, pmax;
     bounding_box(inverse_pointcloud, pmin, pmax);
-    double resolution(0.1);
+    double resolution(0.5);
     std::size_t NROWS((std::size_t)(ceil((pmax.x - pmin.x) / resolution) + 1));
     std::size_t NCOLS((std::size_t)(ceil((pmax.y - pmin.y) / resolution) + 1));
-    csf::Cloth c1(NROWS, NCOLS, 1, resolution, resolution, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z+2));
+    csf::Cloth c1(NROWS, NCOLS, 1, resolution, resolution, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
 
     std::cout << "size: " << c1.particles.size() << '\n';
 
@@ -474,15 +474,13 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
     //update position(200 iterations, with "virtual spring")
 
-    for (std::size_t i = 0; i < 150; ++i) {
+    for (std::size_t i = 0; i < 170; ++i) {
         c1.update_cloth_gravity();
         //collision check
         c1.update_cloth_spring();
         c1.terrain_intersection_check();
         
         //c1.update_cloth_spring();
-
-
         //if (c1.calculate_max_diff() != 0 && c1.calculate_max_diff() < 0.0001)break;
         
     }
