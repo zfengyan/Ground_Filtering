@@ -296,6 +296,55 @@ namespace csf {
         }*/
     }
 
+
+    /*
+    * @brief: compute the distance between two pointclouds
+    * compare the distance to the threshold
+    * store the classification results in the vector
+    * '2' for ground points
+    * '1' for other points
+    */
+    void filter_classification(
+        const std::vector<Point>& inverse_pointcloud,
+        Cloth& cloth,
+        const double& threshold,
+        std::vector<int>& class_labels) {
+
+        class_labels.reserve(inverse_pointcloud.size());
+
+        for (std::size_t i = 0; i < inverse_pointcloud.size(); ++i) {
+
+            // find the x and y shift from the initial_position of the cloth
+            double delta_x(inverse_pointcloud[i][0] - cloth.initial_position.v[0]);
+            double delta_y(inverse_pointcloud[i][1] - cloth.initial_position.v[1]);
+
+            // find the approximate position in the cloth frid
+            int row(int(delta_x / cloth.row_step));
+            int col(int(delta_y / cloth.col_step));
+
+            // neighboring point in cloth
+            int row_right(row), col_right(col + 1); // right neighbor
+            int row_diagonal(row + 1), col_diagonal(col + 1); // diagonal neighbor
+            int row_bottom(row + 1), col_bottom(col); //bottom neighbor
+
+            // calculate the "residuals"
+            double residual_x((delta_x - row * cloth.row_step) / cloth.row_step);
+            double residual_y((delta_y - col * cloth.col_step) / cloth.col_step);
+
+            double distance(
+                cloth.get_particle(row, col)->cur_pos.v[2] * (1 - residual_x) * (1 - residual_y) +
+                cloth.get_particle(row_right, col_right)->cur_pos.v[2] * residual_x * (1 - residual_y) +
+                cloth.get_particle(row_diagonal, col_diagonal)->cur_pos.v[2] * residual_x * residual_y +
+                cloth.get_particle(row_bottom, col_bottom)->cur_pos.v[2] * (1 - residual_x) * residual_y
+            );
+            double variance(std::fabs(distance - inverse_pointcloud[i][2]));
+
+            // classification
+            if (variance < threshold) { class_labels.emplace_back(2); }
+            else { class_labels.emplace_back(1); }
+        }
+    }
+
 }
 
 
@@ -370,11 +419,11 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     }
 
 
-    //std::cout << c1.calculate_max_diff();
+    std::vector<int> class_labels;
+    csf::filter_classification(inverse_pointcloud, c1, 0.2, class_labels);
+    write_lasfile(jparams["output_las"], pointcloud, class_labels);
 
-    std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
-    csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
-
+    //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
     //std::vector<int> class_labels(inverse_pointcloud.size()); // Initialized with 0
     //csf::write_lasfile_tmp(jparams["output_las"], inverse_pointcloud, class_labels);
 
