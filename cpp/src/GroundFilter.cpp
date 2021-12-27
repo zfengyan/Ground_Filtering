@@ -423,10 +423,15 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     csf::filter_classification(inverse_pointcloud, c1, 0.5, class_labels);
     write_lasfile(jparams["output_las"], pointcloud, class_labels);
 
-    //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
+    // output inverse_cloud
     //std::vector<int> class_labels(inverse_pointcloud.size()); // Initialized with 0
     //csf::write_lasfile_tmp(jparams["output_las"], inverse_pointcloud, class_labels);
 
+    // output the simulated cloth
+    //std::vector<int> class_labels(c1.particles.size()); // Initialized with 0
+    //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
+
+ 
 
     //-- TIP
     //-- write the results to a new LAS file

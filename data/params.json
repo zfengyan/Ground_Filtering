@@ -1,15 +1,15 @@
 {
   "input": {
-    "filename": "part_delft_ahn3.laz"
+    "filename": "part_veluwezoom_ahn3.laz"
   },
   "groundfilter_tin": {
-    "output_las": "delft_gf_tin.laz",
+    "output_las": "veluwezoom_gf_tin.laz",
     "resolution": 5,
     "distance": 2,
     "angle": 20
   },
   "groundfilter_csf": {
-    "output_las": "delft_gf_csf.laz",
+    "output_las": "veluwezoom_gf_csf.laz",
     "resolution": 5,
     "epsilon_zmax": 0.1,
     "epsilon_ground": 0.2
