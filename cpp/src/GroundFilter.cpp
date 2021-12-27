@@ -403,24 +403,24 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
     std::size_t NCOLS((std::size_t)(ceil((pmax.y - pmin.y) / resolution) + 1));
     csf::Cloth c1(NROWS, NCOLS, 1, resolution, resolution, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
 
-    std::cout << "size: " << c1.particles.size() << '\n';
-
     find_intersection_height(inverse_pointcloud, c1);
     //add gravity
     c1.addforce_for_particles(csf::Vector3d(0, 0, -10));
 
-    for (std::size_t i = 0; i < 170; ++i) {
+    //int count(0);
+    for (std::size_t i = 0; i < 500; ++i) {
         c1.update_cloth_gravity();
         c1.update_cloth_spring();
         c1.terrain_intersection_check();
         
-        //if (c1.calculate_max_diff() != 0 && c1.calculate_max_diff() < 0.0001)break;
-        
+        //if (c1.calculate_max_diff() != 0 && c1.calculate_max_diff() >= 0.066)break;
+        //++count;
     }
+    //std::cout << c1.calculate_max_diff();
 
 
     std::vector<int> class_labels;
-    csf::filter_classification(inverse_pointcloud, c1, 0.2, class_labels);
+    csf::filter_classification(inverse_pointcloud, c1, 0.5, class_labels);
     write_lasfile(jparams["output_las"], pointcloud, class_labels);
 
     //csf::write_lasfile_particles(jparams["output_las"], c1.particles, class_labels);
