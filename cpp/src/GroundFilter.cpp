@@ -398,7 +398,7 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
     csf::MyPoint pmin, pmax;
     bounding_box(inverse_pointcloud, pmin, pmax);
-    double resolution(0.5);
+    double resolution(jparams["resolution"]);
     std::size_t NROWS((std::size_t)(ceil((pmax.x - pmin.x) / resolution) + 1));
     std::size_t NCOLS((std::size_t)(ceil((pmax.y - pmin.y) / resolution) + 1));
     csf::Cloth c1(NROWS, NCOLS, 1, resolution, resolution, 0.01, csf::Vector3d(pmin.x, pmin.y, pmax.z));
@@ -420,7 +420,8 @@ void groundfilter_csf(const std::vector<Point>& pointcloud, const json& jparams)
 
 
     std::vector<int> class_labels;
-    csf::filter_classification(inverse_pointcloud, c1, 0.5, class_labels);
+    double epsilon_ground(jparams["epsilon_ground"]);
+    csf::filter_classification(inverse_pointcloud, c1, epsilon_ground, class_labels);
     write_lasfile(jparams["output_las"], pointcloud, class_labels);
 
     // output inverse_cloud

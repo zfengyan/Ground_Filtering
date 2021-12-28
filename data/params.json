@@ -10,8 +10,8 @@
   },
   "groundfilter_csf": {
     "output_las": "delft_gf_csf.laz",
-    "resolution": 5,
+    "resolution": 0.5,
     "epsilon_zmax": 0.1,
-    "epsilon_ground": 0.2
+    "epsilon_ground": 0.5
   }
 }
