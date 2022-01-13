@@ -1,5 +1,6 @@
-# CSF algorithm
-Ground filtering based on the cloth simulation with verlet integration.
+# Ground filtering algorithm
+
+CSF algorithm is based on the cloth simulation with verlet integration.
 
 The idea of CSF is from this paper:
 
