@@ -1,15 +1,15 @@
 {
   "input": {
-    "filename": "part_delft_ahn3.laz"
+    "filename": "part_wassenaar_ahn3.laz"
   },
   "groundfilter_tin": {
-    "output_las": "delft_gf_tin.laz",
-    "resolution": 5,
-    "distance": 2,
-    "angle": 20
+    "output_las": "wassenaar_gf_tin.laz",
+    "resolution": 5.0,
+    "distance": 0.2,
+    "angle": 10
   },
   "groundfilter_csf": {
-    "output_las": "delft_gf_csf.laz",
+    "output_las": "wassenaar_gf_csf.laz",
     "resolution": 0.5,
     "epsilon_zmax": 0.1,
     "epsilon_ground": 0.5
