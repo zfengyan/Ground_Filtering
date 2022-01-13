@@ -1,6 +1,6 @@
 # Ground Filtering
 
-The tin refinement algorithm is from my collaborator Yitong Xia(xiayitong0630@gmail.com), thank her for her efforts and dedications.
+The tin refinement algorithm is from my collaborator Yitong Xia(xiayitong0630@gmail.com), thank her for her efforts and dedication.
 
 CSF algorithm is based on the cloth simulation with verlet integration.
 
