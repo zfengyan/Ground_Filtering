@@ -41,8 +41,7 @@
 #include <CGAL/Plane_3.h>
 #include <CGAL/convex_hull_2.h>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+#define M_PI 3.14159265358979323846
 
 void groundfilter_tin(const std::vector<Point>& pointcloud, const json& jparams) {
 
