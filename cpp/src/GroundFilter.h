@@ -1,12 +1,18 @@
-/*
-  GEO1015.2021
-  hw03 
-  --
-  [YOUR NAME] 
-  [YOUR STUDENT NUMBER] 
-  [YOUR NAME] 
-  [YOUR STUDENT NUMBER] 
-*/
+/********************************************************************
+* GEO1015.2021
+* hw03
+* Yitong Xia
+* 5445825
+* Fengyan Zhang
+* 5462150
+*
+* The idea of CSF is from this paper:
+* http://www.mdpi.com/2072-4292/8/6/501/htm
+* The basic architectures and ideas are inspired by this article (its related code is open source).
+*
+*********************************************************************/
+
+
 #ifndef _GROUND_FILTER_H_
 #define _GROUND_FILTER_H_
 
