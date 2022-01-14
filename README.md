@@ -2,7 +2,11 @@
 
 **--INFORMATION**
 
-The _Tin Refinement_ algorithm is from my collaborator Yitong Xia(xiayitong0630@gmail.com), thank her for her efforts and dedication.
+The _Tin Refinement_ algorithm is from my collaborator Yitong Xia(xiayitong0630@gmail.com), and her repository: 
+
+https://github.com/YitongXia/ground-filtering.
+
+Thank her for her efforts and dedication.
 
 _CSF_ algorithm is based on the cloth simulation with verlet integration.
 
