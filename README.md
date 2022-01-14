@@ -30,6 +30,10 @@ The original data set is classified as **_ground points_** and **_non-ground poi
 
 The input files are in **_data_** folder.
 
+**--OUTPUT**
+
+The output files are in **_data_** folder. The names of generated files are in: **_data/params.json_**.
+
 **--ADJUSTMENT**
 
 Modify input file and parameters: enter into **_data/params.json_**.
