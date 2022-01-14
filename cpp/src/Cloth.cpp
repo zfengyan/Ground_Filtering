@@ -1,10 +1,4 @@
 /********************************************************************
-* GEO1015.2021
-* hw03
-* Yitong Xia
-* 5445825
-* Fengyan Zhang
-* 5462150
 * 
 * The idea of CSF is from this paper:
 * http://www.mdpi.com/2072-4292/8/6/501/htm
