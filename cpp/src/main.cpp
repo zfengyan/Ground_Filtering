@@ -1,7 +1,4 @@
 /*
-  GEO1015.2021
-  hw03
-  --
   Ravi Peters
   r.y.peters@tudelft.nl
 */
